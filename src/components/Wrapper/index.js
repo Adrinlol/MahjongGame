@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useEffect, useRef } from "react";
+import React, { useState, Fragment } from "react";
 import { Row } from "antd";
 
 import Card from "../Card";
@@ -12,10 +12,9 @@ const Wrapper = () => {
     value: 0,
     id: 0
   });
-  const buttonClick = useRef();
 
-  useEffect(() => {
-    async function onCardClick(value, id) {
+  const onCardClick = (value, id) => {
+    setTimeout(() => {
       let newItem = { ...numbers[id], visible: true, disabled: false };
       let prevItem = { ...numbers[card.id], visible: true, disabled: false };
 
@@ -27,7 +26,7 @@ const Wrapper = () => {
 
       setNumbers(updatedArray);
 
-      if (card.value === 0 && !value.disabled) {
+      if (card.value === 0 && !value.disabled && !value.visible) {
         setCard({
           value: value.value,
           id: id
@@ -35,13 +34,15 @@ const Wrapper = () => {
       } else if (
         !value.disabled &&
         !value.disabled &&
-        value.value !== card.value
+        value.value !== card.value &&
+        value.id !== id
       ) {
+        newItem = { ...newItem, visible: false };
         setTimeout(() => {
-          newItem = { ...newItem, visible: false };
           prevItem = { ...prevItem, visible: false };
           setCard({
-            value: 0
+            value: 0,
+            id: 0
           });
           let updatedArray = [
             ...numbers.slice(0, card.id),
@@ -50,10 +51,16 @@ const Wrapper = () => {
           ];
 
           setNumbers(updatedArray);
-        }, 300);
-      } else if (value.value === card.value && !value.disabled) {
+        }, 100);
+      } else if (
+        value.value === card.value &&
+        !value.disabled &&
+        !value.visible &&
+        value.id !== id
+      ) {
         setCard({
-          value: 0
+          value: 0,
+          id: 0
         });
         newItem = { ...newItem, disabled: true, visible: true };
         prevItem = { ...prevItem, disabled: true, visible: true };
@@ -71,9 +78,9 @@ const Wrapper = () => {
 
         setNumbers(updatedArray);
       }
-    }
-    buttonClick.current = onCardClick;
-  }, [card, numbers]);
+    }, 300);
+    return onCardClick;
+  };
 
   return (
     <Fragment>
@@ -85,7 +92,7 @@ const Wrapper = () => {
               <Card
                 visible={item.visible}
                 number={item.value}
-                onClick={() => buttonClick.current(item, id)}
+                onClick={() => onCardClick(item, id)}
                 key={id}
                 disabled={item.disabled}
               />
