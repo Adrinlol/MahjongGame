@@ -1,4 +1,5 @@
 # PigDice
+- Demo: https://adrinlol-mahjong.herokuapp.com
 
 ## Game rules
 - This is an alternative version of chinese Mahjong game.
